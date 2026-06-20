@@ -1,0 +1,8 @@
+com.mycompany.my3dgame.app-pngs-0 /workspace/My3DGame_Android/app/build/generated/res/pngs/release
+com.mycompany.my3dgame.app-resValues-1 /workspace/My3DGame_Android/app/build/generated/res/resValues/release
+com.mycompany.my3dgame.app-rs-2 /workspace/My3DGame_Android/app/build/generated/res/rs/release
+com.mycompany.my3dgame.app-mergeReleaseResources-3 /workspace/My3DGame_Android/app/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
+com.mycompany.my3dgame.app-mergeReleaseResources-4 /workspace/My3DGame_Android/app/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+com.mycompany.my3dgame.app-merged_res-5 /workspace/My3DGame_Android/app/build/intermediates/merged_res/release
+com.mycompany.my3dgame.app-main-6 /workspace/My3DGame_Android/app/src/main/res
+com.mycompany.my3dgame.app-release-7 /workspace/My3DGame_Android/app/src/release/res

@@ -1,0 +1,18 @@
+<lint-module
+    format="1"
+    dir="/workspace/My3DGame_Android/app"
+    name=":app"
+    type="APP"
+    maven="My3DGame:app:"
+    gradle="7.4.2"
+    buildFolder="build"
+    bootClassPath="/root/android-sdk/platforms/android-33/android.jar:/root/android-sdk/build-tools/30.0.3/core-lambda-stubs.jar"
+    javaSourceLevel="11"
+    compileTarget="android-33"
+    neverShrinking="true">
+  <lintOptions
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>

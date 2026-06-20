@@ -1,0 +1,11 @@
+[gd_scene load_steps=1 format=2]
+
+[node name="Main" type="Spatial"]
+
+[node name="Camera" type="Camera" parent="."]
+
+[node name="Light" type="DirectionalLight" parent="."]
+light_energy = 2
+
+[node name="Cube" type="MeshInstance" parent="."]
+

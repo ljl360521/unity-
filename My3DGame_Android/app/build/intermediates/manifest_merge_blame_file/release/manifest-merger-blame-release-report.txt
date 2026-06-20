@@ -1,0 +1,49 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.mycompany.my3dgame"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+8-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="33" />
+9-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:5:5-67
+11-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:5:22-64
+12
+13    <application
+13-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:7:5-22:19
+14        android:allowBackup="true"
+14-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:8:9-35
+15        android:extractNativeLibs="false"
+16        android:label="@string/app_name"
+16-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:9:9-41
+17        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+17-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:10:9-67
+18        <activity
+18-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:12:9-21:20
+19            android:name="com.mycompany.my3dgame.MainActivity"
+19-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:13:13-41
+20            android:configChanges="orientation|screenSize|keyboardHidden"
+20-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:16:13-74
+21            android:exported="true"
+21-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:14:13-36
+22            android:screenOrientation="landscape" >
+22-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:15:13-50
+23            <intent-filter>
+23-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:17:13-20:29
+24                <action android:name="android.intent.action.MAIN" />
+24-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:18:17-69
+24-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:18:25-66
+25
+26                <category android:name="android.intent.category.LAUNCHER" />
+26-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:19:17-77
+26-->/workspace/My3DGame_Android/app/src/main/AndroidManifest.xml:19:27-74
+27            </intent-filter>
+28        </activity>
+29    </application>
+30
+31</manifest>

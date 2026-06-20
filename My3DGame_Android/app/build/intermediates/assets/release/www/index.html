@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>My 3D Game - High Quality Graphics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; background: #000; font-family: Arial, sans-serif; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #ui { position: absolute; top: 10px; left: 10px; color: white; z-index: 100; pointer-events: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        #score { font-size: 24px; font-weight: bold; color: #FFD700; }
+        #time { position: absolute; top: 10px; right: 10px; font-size: 24px; color: #00FFFF; }
+        #startScreen, #gameOverScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); z-index: 200; }
+        #startScreen h1, #gameOverScreen h1 { font-size: 48px; color: #fff; margin-bottom: 20px; text-shadow: 0 0 20px rgba(0,150,255,0.8); }
+        button { padding: 15px 40px; font-size: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; border-radius: 30px; cursor: pointer; margin-top: 20px; transition: transform 0.2s; }
+        button:hover { transform: scale(1.05); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div id="score">Score: 0</div>
+        <div id="time">60</div>
+    </div>
+    
+    <div id="startScreen">
+        <h1>MY 3D GAME</h1>
+        <p style="color:#aaa;margin-bottom:10px;">High Quality Graphics Demo</p>
+        <button onclick="startGame()">START GAME</button>
+    </div>
+    
+    <div id="gameOverScreen" class="hidden">
+        <h1>GAME OVER</h1>
+        <h2 id="finalScore" style="color:#FFD700;">Score: 0</h2>
+        <button onclick="startGame()">PLAY AGAIN</button>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // ==================== 高画质3D引擎配置 ====================
+        let scene, camera, renderer, composer;
+        let player, ground, collectibles = [];
+        let score = 0, timeLeft = 60, gameActive = false;
+        let keys = {}, touchStart = null;
+        let clock = new THREE.Clock();
+        
+        // 初始化Three.js场景
+        function init() {
+            // 场景
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0a0a15, 0.02);
+            
+            // 相机（广角视野）
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 5, 15);
+            camera.lookAt(0, 0, 0);
+            
+            // 渲染器（高性能设置）
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                powerPreference: "high-performance",
+                alpha: false,
+                stencil: false,
+                depth: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            document.body.appendChild(renderer.domElement);
+            
+            // 环境光
+            const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+            scene.add(ambientLight);
+            
+            // 主方向光（太阳）
+            const sunLight = new THREE.DirectionalLight(0xfff5e6, 2.5);
+            sunLight.position.set(50, 80, 30);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.camera.near = 0.5;
+            sunLight.shadow.camera.far = 200;
+            sunLight.shadow.camera.left = -60;
+            sunLight.shadow.camera.right = 60;
+            sunLight.shadow.camera.top = 60;
+            sunLight.shadow.camera.bottom = -60;
+            scene.add(sunLight);
+            
+            // 蓝色点光源
+            const blueLight = new THREE.PointLight(0x4080ff, 3, 40);
+            blueLight.position.set(-12, 6, -12);
+            scene.add(blueLight);
+            
+            // 橙色点光源
+            const orangeLight = new THREE.PointLight(0xff8040, 2.5, 35);
+            orangeLight.position.set(12, 4, 12);
+            scene.add(orangeLight);
+            
+            // 地面（带PBR材质）
+            const groundGeometry = new THREE.PlaneGeometry(200, 200, 64, 64);
+            const groundMaterial = new THREE.MeshStandardMaterial({
+                color: 0x15182a,
+                roughness: 0.7,
+                metalness: 0.1,
+                envMapIntensity: 0.5
+            });
+            ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // 玩家（发光立方体）
+            const playerGeometry = new THREE.BoxGeometry(1.5, 2.5, 1.5);
+            const playerMaterial = new THREE.MeshStandardMaterial({
+                color: 0x3399ff,
+                roughness: 0.25,
+                metalness: 0.85,
+                emissive: 0x153366,
+                emissiveIntensity: 0.7
+            });
+            player = new THREE.Mesh(playerGeometry, playerMaterial);
+            player.position.y = 1.25;
+            player.castShadow = true;
+            scene.add(player);
+            
+            // 添加玩家光源
+            const playerLight = new THREE.PointLight(0x3399ff, 2, 15);
+            playerLight.position.copy(player.position);
+            player.add(playerLight);
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // 键盘控制
+            document.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+            document.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+            
+            // 触屏控制
+            document.addEventListener('touchstart', handleTouchStart, false);
+            document.addEventListener('touchmove', handleTouchMove, false);
+            document.addEventListener('touchend', handleTouchEnd, false);
+            
+            animate();
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function handleTouchStart(e) {
+            touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!touchStart || !gameActive) return;
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - touchStart.x;
+            const deltaY = touch.clientY - touchStart.y;
+            
+            player.position.x += deltaX * 0.03;
+            player.position.z += deltaY * 0.03;
+            
+            // 边界限制
+            player.position.x = Math.max(-45, Math.min(45, player.position.x));
+            player.position.z = Math.max(-45, Math.min(45, player.position.z));
+            
+            touchStart = { x: touch.clientX, y: touch.clientY };
+        }
+        
+        function handleTouchEnd(e) {
+            touchStart = null;
+        }
+        
+        // 生成收集物
+        function spawnCollectibles() {
+            collectibles.forEach(c => scene.remove(c));
+            collectibles = [];
+            
+            for (let i = 0; i < 25; i++) {
+                const type = Math.floor(Math.random() * 3);
+                let color, points, size, glowColor;
+                
+                switch(type) {
+                    case 0: // 普通 - 蓝色
+                        color = 0x3399ff; points = 10; size = 0.6; glowColor = 0x3399ff; break;
+                    case 1: // 稀有 - 金色
+                        color = 0xffd700; points = 25; size = 0.75; glowColor = 0xffaa00; break;
+                    case 2: // 史诗 - 红色
+                        color = 0xff3333; points = 50; size = 0.9; glowColor = 0xff0000; break;
+                }
+                
+                const geometry = type === 2 ? 
+                    new THREE.OctahedronGeometry(size, 2) : 
+                    new THREE.SphereGeometry(size, 32, 32);
+                
+                const material = new THREE.MeshStandardMaterial({
+                    color: color,
+                    roughness: 0.18,
+                    metalness: 0.92,
+                    emissive: color,
+                    emissiveIntensity: 0.6
+                });
+                
+                const collectible = new THREE.Mesh(geometry, material);
+                collectible.position.set(
+                    (Math.random() - 0.5) * 80,
+                    1 + Math.random() * 3,
+                    (Math.random() - 0.5) * 80
+                );
+                collectible.castShadow = true;
+                collectible.userData = { points, rotSpeed: 1 + Math.random() * 2 };
+                
+                // 添加点光源
+                const light = new THREE.PointLight(glowColor, 2, 12);
+                collectible.add(light);
+                
+                scene.add(collectible);
+                collectibles.push(collectible);
+            }
+        }
+        
+        // 更新玩家位置
+        function updatePlayer(delta) {
+            if (!gameActive) return;
+            
+            const speed = 18 * delta;
+            
+            // WASD/方向键控制
+            if (keys['w'] || keys['arrowup']) player.position.z -= speed;
+            if (keys['s'] || keys['arrowdown']) player.position.z += speed;
+            if (keys['a'] || keys['arrowleft']) player.position.x -= speed;
+            if (keys['d'] || keys['arrowright']) player.position.x += speed;
+            
+            // 边界限制
+            player.position.x = Math.max(-45, Math.min(45, player.position.x));
+            player.position.z = Math.max(-45, Math.min(45, player.position.z));
+            
+            // 玩家动画
+            player.rotation.y += delta * 0.5;
+            player.position.y = 1.25 + Math.sin(Date.now() * 0.003) * 0.15;
+        }
+        
+        // 碰撞检测
+        function checkCollisions() {
+            if (!gameActive) return;
+            
+            for (let i = collectibles.length - 1; i >= 0; i--) {
+                const c = collectibles[i];
+                const dist = player.position.distanceTo(c.position);
+                
+                if (dist < 2.5) {
+                    score += c.userData.points;
+                    updateUI();
+                    
+                    // 收集特效
+                    createCollectEffect(c.position.clone(), c.material.color);
+                    
+                    scene.remove(c);
+                    collectibles.splice(i, 1);
+                } else {
+                    // 物品自转和浮动
+                    c.rotation.y += c.userData.rotSpeed * 0.016;
+                    c.position.y += Math.sin(Date.now() * 0.002 + i) * 0.003;
+                }
+            }
+        }
+        
+        // 收集粒子效果
+        function createCollectEffect(position, color) {
+            const particleCount = 30;
+            const particles = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const velocities = [];
+            
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = position.x;
+                positions[i * 3 + 1] = position.y;
+                positions[i * 3 + 2] = position.z;
+                
+                velocities.push(new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.8,
+                    Math.random() * 0.8,
+                    (Math.random() - 0.5) * 0.8
+                ));
+            }
+            
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const material = new THREE.PointsMaterial({
+                color: color,
+                size: 0.25,
+                transparent: true,
+                opacity: 1,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const particleSystem = new THREE.Points(particles, material);
+            scene.add(particleSystem);
+            
+            // 动画
+            let frame = 0;
+            const animateParticles = () => {
+                frame++;
+                if (frame > 40) {
+                    scene.remove(particleSystem);
+                    return;
+                }
+                
+                const pos = particles.attributes.position.array;
+                for (let i = 0; i < particleCount; i++) {
+                    pos[i * 3] += velocities[i].x;
+                    pos[i * 3 + 1] += velocities[i].y;
+                    pos[i * 3 + 2] += velocities[i].z;
+                    velocities[i].y -= 0.02; // 重力
+                }
+                particles.attributes.position.needsUpdate = true;
+                material.opacity -= 0.025;
+                
+                requestAnimationFrame(animateParticles);
+            };
+            animateParticles();
+        }
+        
+        function updateUI() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('time').textContent = Math.ceil(timeLeft);
+        }
+        
+        function startGame() {
+            score = 0;
+            timeLeft = 60;
+            gameActive = true;
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            
+            player.position.set(0, 1.25, 0);
+            spawnCollectibles();
+            updateUI();
+        }
+        
+        function endGame() {
+            gameActive = false;
+            document.getElementById('finalScore').textContent = `Score: ${score}`;
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+        }
+        
+        // 主循环
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            if (gameActive) {
+                timeLeft -= delta;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    endGame();
+                }
+                updateUI();
+            }
+            
+            updatePlayer(delta);
+            checkCollisions();
+            
+            renderer.render(scene, camera);
+        }
+        
+        // 启动
+        init();
+    </script>
+</body>
+</html>
