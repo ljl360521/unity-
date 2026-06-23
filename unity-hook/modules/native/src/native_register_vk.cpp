@@ -230,7 +230,7 @@ static void JNICALL nativeInit(JNIEnv* env, jclass, jobject surface) {
     ImGui::GetStyle().ScaleAllSizes(1.0f);
     auto& s = ImGui::GetStyle();
     s.WindowRounding = 5.3f; s.FrameRounding = 2.3f; s.ScrollbarRounding = 0;
-    ImGui::ApplyMatchaGreenDarkTheme();
+    ImGui::StyleColorsDark();
 
     if (!VulkanInit(window)) {
         LOGE("[VK] VulkanInit failed");
