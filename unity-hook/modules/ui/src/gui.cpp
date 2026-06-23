@@ -4,8 +4,13 @@
 static bool s_AntiScreenCapture = true;
 static bool s_ShowAnotherWindow = false;
 static float s_UIScale = 1.0f;
+static float s_UIScaleLast = 1.0f;
 
 void 绘制控件() {
+    ImGuiIO& io = ImGui::GetIO();
+
+    ImGui::SetNextWindowPos(ImVec2(屏宽/2-750/2, 100), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(750, 550), ImGuiCond_FirstUseEver);
     ImGui::Begin("工具箱");
     ImGuiWindow* win = ImGui::GetCurrentWindow();
     g_MainWindowBounds[0] = win->Pos.x;
@@ -31,9 +36,10 @@ void 绘制控件() {
 
             if (ImGui::SliderFloat("UI大小", &s_UIScale, 0.5f, 2.0f, "%.1f"))
             {
-                ImGuiStyle& style = ImGui::GetStyle();
-                style.ScaleAllSizes(s_UIScale);
-                ImGui::GetIO().FontGlobalScale = s_UIScale;
+                float ratio = s_UIScale / s_UIScaleLast;
+                ImGui::GetStyle().ScaleAllSizes(ratio);
+                io.FontGlobalScale = s_UIScale;
+                s_UIScaleLast = s_UIScale;
             }
 
             ImGui::EndTabItem();

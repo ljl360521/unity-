@@ -227,10 +227,11 @@ static void JNICALL nativeInit(JNIEnv* env, jclass, jobject surface) {
             &cfg, io.Fonts->GetGlyphRangesChineseFull());
     }
 
-    ImGui::GetStyle().ScaleAllSizes(1.0f);
+    ImGui::GetStyle().ScaleAllSizes(2.0f);
     auto& s = ImGui::GetStyle();
     s.WindowRounding = 5.3f; s.FrameRounding = 2.3f; s.ScrollbarRounding = 0;
     ImGui::StyleColorsDark();
+    io.FontGlobalScale = 1.0f;
 
     if (!VulkanInit(window)) {
         LOGE("[VK] VulkanInit failed");
