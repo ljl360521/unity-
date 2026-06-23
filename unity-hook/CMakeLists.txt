@@ -33,23 +33,17 @@ endif()
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 set(MODS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
-# dobby - libs/dobby/lib/${ANDROID_ABI}/libdobby.a
+# dobby - libs/Dobby/lib/${ANDROID_ABI}/libdobby.a
 add_library(dobby STATIC IMPORTED)
 set_target_properties(dobby PROPERTIES
-    IMPORTED_LOCATION ${LIBS_DIR}/dobby/lib/${ANDROID_ABI}/libdobby.a
-    INTERFACE_INCLUDE_DIRECTORIES ${LIBS_DIR}/dobby/include)
+    IMPORTED_LOCATION ${LIBS_DIR}/Dobby/lib/${ANDROID_ABI}/libdobby.a
+    INTERFACE_INCLUDE_DIRECTORIES ${LIBS_DIR}/Dobby/include)
 
-# imgui - 从源码编译
-set(IMGUI_DIR ${LIBS_DIR}/ImGui)
-file(GLOB IMGUI_SRC
-    ${IMGUI_DIR}/src/*.cpp
-    ${IMGUI_DIR}/include/imgui_impl_android.cpp
-    ${IMGUI_DIR}/include/imgui_impl_opengl3.cpp
-    ${IMGUI_DIR}/include/imgui_impl_vulkan.cpp
-)
-add_library(imgui STATIC ${IMGUI_SRC})
-target_include_directories(imgui PUBLIC ${IMGUI_DIR}/include)
-target_compile_options(imgui PRIVATE -Wno-unused-parameter -Wno-unused-variable)
+# imgui - libs/ImGui/lib/${ANDROID_ABI}/libimgui.a
+add_library(imgui STATIC IMPORTED)
+set_target_properties(imgui PROPERTIES
+    IMPORTED_LOCATION ${LIBS_DIR}/ImGui/lib/${ANDROID_ABI}/libimgui.a
+    INTERFACE_INCLUDE_DIRECTORIES ${LIBS_DIR}/ImGui/include)
 
 # openssl - libs/openssl/lib/${ANDROID_ABI}/libcrypto.a & libssl.a
 add_library(crypto STATIC IMPORTED)
@@ -110,7 +104,7 @@ target_include_directories(hook PRIVATE
     ${LIBS_DIR}/openssl/include
     ${LIBS_DIR}/curl/include
     ${LIBS_DIR}/ImGui/include
-    ${LIBS_DIR}/dobby/include
+    ${LIBS_DIR}/Dobby/include
     ${MODS_DIR}/common/include
     ${MODS_DIR}/config/include
     ${MODS_DIR}/il2cpp/include

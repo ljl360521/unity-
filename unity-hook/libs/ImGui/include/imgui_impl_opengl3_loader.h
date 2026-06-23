@@ -714,11 +714,7 @@ static void close_libgl(void)
 
 static int is_library_loaded(const char* name, void** lib)
 {
-#if defined(__HAIKU__)
-    *lib = NULL; // no support for RTLD_NOLOAD on Haiku.
-#else
     *lib = dlopen(name, RTLD_LAZY | RTLD_LOCAL | RTLD_NOLOAD);
-#endif
     return *lib != NULL;
 }
 
@@ -836,7 +832,6 @@ static int parse_version(void)
 }
 
 static void load_procs(GL3WGetProcAddressProc proc);
-static void clear_procs();
 
 int imgl3wInit(void)
 {
@@ -856,7 +851,6 @@ int imgl3wInit2(GL3WGetProcAddressProc proc)
 void imgl3wShutdown(void)
 {
     close_libgl();
-    clear_procs();
 }
 
 int imgl3wIsSupported(int major, int minor)
@@ -943,13 +937,6 @@ static void load_procs(GL3WGetProcAddressProc proc)
     size_t i;
     for (i = 0; i < GL3W_ARRAY_SIZE(proc_names); i++)
         imgl3wProcs.ptr[i] = proc(proc_names[i]);
-}
-
-static void clear_procs()
-{
-    size_t i;
-    for (i = 0; i < GL3W_ARRAY_SIZE(proc_names); i++)
-        imgl3wProcs.ptr[i] = nullptr;
 }
 
 #ifdef __cplusplus
