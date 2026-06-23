@@ -33,11 +33,11 @@ endif()
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 set(MODS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
-# dobby - libs/Dobby/lib/${ANDROID_ABI}/libdobby.a
+# dobby - libs/dobby/lib/${ANDROID_ABI}/libdobby.a
 add_library(dobby STATIC IMPORTED)
 set_target_properties(dobby PROPERTIES
-    IMPORTED_LOCATION ${LIBS_DIR}/Dobby/lib/${ANDROID_ABI}/libdobby.a
-    INTERFACE_INCLUDE_DIRECTORIES ${LIBS_DIR}/Dobby/include)
+    IMPORTED_LOCATION ${LIBS_DIR}/dobby/lib/${ANDROID_ABI}/libdobby.a
+    INTERFACE_INCLUDE_DIRECTORIES ${LIBS_DIR}/dobby/include)
 
 # imgui - libs/ImGui/lib/${ANDROID_ABI}/libimgui.a
 add_library(imgui STATIC IMPORTED)
@@ -104,7 +104,7 @@ target_include_directories(hook PRIVATE
     ${LIBS_DIR}/openssl/include
     ${LIBS_DIR}/curl/include
     ${LIBS_DIR}/ImGui/include
-    ${LIBS_DIR}/Dobby/include
+    ${LIBS_DIR}/dobby/include
     ${MODS_DIR}/common/include
     ${MODS_DIR}/config/include
     ${MODS_DIR}/il2cpp/include
