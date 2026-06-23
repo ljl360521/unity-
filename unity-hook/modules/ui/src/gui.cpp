@@ -2,16 +2,11 @@
 #include "native_register_vk.h"
 
 static bool s_AntiScreenCapture = true;
-static bool s_ShowDemoWindow = true;
 static bool s_ShowAnotherWindow = false;
-static float s_FloatValue = 0.0f;
-static int s_Counter = 0;
-static ImVec4 s_ClearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+static float s_UIScale = 1.0f;
 
 void 绘制控件() {
-    ImGuiIO& io = ImGui::GetIO();
-
-    ImGui::Begin("你好，世界！");
+    ImGui::Begin("工具箱");
     ImGuiWindow* win = ImGui::GetCurrentWindow();
     g_MainWindowBounds[0] = win->Pos.x;
     g_MainWindowBounds[1] = win->Pos.y;
@@ -23,20 +18,7 @@ void 绘制控件() {
         // ---- 功能标签页 ----
         if (ImGui::BeginTabItem("功能"))
         {
-            ImGui::Text("这是一些有用的文本。");
-            ImGui::Checkbox("演示窗口", &s_ShowDemoWindow);
             ImGui::Checkbox("另一个窗口", &s_ShowAnotherWindow);
-
-            ImGui::SliderFloat("浮点数", &s_FloatValue, 0.0f, 1.0f);
-            ImGui::ColorEdit3("清除颜色", (float*)&s_ClearColor);
-
-            if (ImGui::Button("按钮"))
-                s_Counter++;
-            ImGui::SameLine();
-            ImGui::Text("计数 = %d", s_Counter);
-
-            ImGui::Text("应用程序平均 %.3f 毫秒/帧 (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-
             ImGui::EndTabItem();
         }
 
@@ -46,6 +28,14 @@ void 绘制控件() {
             if (ImGui::Checkbox("防录屏", &s_AntiScreenCapture)) {
                 setSurfaceSecurity(s_AntiScreenCapture, s_AntiScreenCapture);
             }
+
+            if (ImGui::SliderFloat("UI大小", &s_UIScale, 0.5f, 2.0f, "%.1f"))
+            {
+                ImGuiStyle& style = ImGui::GetStyle();
+                style.ScaleAllSizes(s_UIScale);
+                ImGui::GetIO().FontGlobalScale = s_UIScale;
+            }
+
             ImGui::EndTabItem();
         }
 
@@ -53,10 +43,6 @@ void 绘制控件() {
     }
 
     ImGui::End();
-
-    // 演示窗口
-    if (s_ShowDemoWindow)
-        ImGui::ShowDemoWindow(&s_ShowDemoWindow);
 
     // 另一个窗口
     if (s_ShowAnotherWindow)
