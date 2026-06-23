@@ -402,9 +402,9 @@ bool VulkanInit(ANativeWindow* window) {
     vkInfo.DescriptorPool = g_Vk.imguiDescriptorPool;
     vkInfo.MinImageCount  = (uint32_t)g_Vk.swapchainImages.size();
     vkInfo.ImageCount     = (uint32_t)g_Vk.swapchainImages.size();
-    vkInfo.RenderPass     = g_Vk.renderPass;
-    vkInfo.MSAASamples    = VK_SAMPLE_COUNT_1_BIT;
-    vkInfo.Subpass        = 0;
+    vkInfo.PipelineInfoMain.RenderPass     = g_Vk.renderPass;
+    vkInfo.PipelineInfoMain.MSAASamples    = VK_SAMPLE_COUNT_1_BIT;
+    vkInfo.PipelineInfoMain.Subpass        = 0;
 
     ImGui_ImplVulkan_Init(&vkInfo);
 
@@ -473,9 +473,9 @@ bool VulkanResume(ANativeWindow* window) {
     vkInfo.DescriptorPool = g_Vk.imguiDescriptorPool;
     vkInfo.MinImageCount  = (uint32_t)g_Vk.swapchainImages.size();
     vkInfo.ImageCount     = (uint32_t)g_Vk.swapchainImages.size();
-    vkInfo.RenderPass     = g_Vk.renderPass;
-    vkInfo.MSAASamples    = VK_SAMPLE_COUNT_1_BIT;
-    vkInfo.Subpass        = 0;
+    vkInfo.PipelineInfoMain.RenderPass     = g_Vk.renderPass;
+    vkInfo.PipelineInfoMain.MSAASamples    = VK_SAMPLE_COUNT_1_BIT;
+    vkInfo.PipelineInfoMain.Subpass        = 0;
 
     ImGui_ImplVulkan_Init(&vkInfo);
 
