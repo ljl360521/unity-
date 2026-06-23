@@ -21,6 +21,8 @@ float 屏宽 = 0, 屏高 = 0;
 int   屏幕宽 = 0, 屏幕高 = 0;
 bool  g_Initialized = false;
 float g_MainWindowBounds[4] = {};
+float g_SecondaryWindowBounds[4] = {};
+bool  g_SecondaryWindowVisible = false;
 float g_DragBarBounds[4] = {};
 bool  g_DragBarVisible = false;
 float g_PopupBounds[4] = {};
@@ -39,29 +41,11 @@ static void JNICALL nativeOnTouchEvent(
     if (!g_Initialized) goto cleanup;
 
     {
-        ImGuiIO& io = ImGui::GetIO();
         enum { DOWN=0, UP=1, MOVE=2, CANCEL=3, PTR_DOWN=5, PTR_UP=6 };
 
-        switch (action) {
-            case DOWN:
-                if (pointerCount > 0) { io.MousePos = {xs[0], ys[0]}; io.MouseDown[0] = true; }
-                break;
-            case PTR_DOWN:
-                if (pointerIndex < pointerCount) {
-                    io.MousePos = {xs[pointerIndex], ys[pointerIndex]}; io.MouseDown[0] = true;
-                }
-                break;
-            case MOVE:
-                if (pointerCount > 0) io.MousePos = {xs[0], ys[0]};
-                break;
-            case UP:
-                if (pointerCount > 0) io.MousePos = {xs[0], ys[0]};
-                io.MouseDown[0] = false;
-                break;
-            case CANCEL:
-                io.MouseDown[0] = false;
-                break;
-        }
+        // 单点触摸（io.MouseDown / io.MousePos）由 MotionEventClick 在 Java 层
+        // 仅对 ImGui 窗口内的触摸调用，因此这里不再设置，避免窗口外触摸
+        // 污染 ImGui 状态导致"要点两下"及副窗口触摸失效。
 
         auto& mtm = ImGuiMultiTouch::MultiTouchManager::GetInstance();
         switch (action) {
@@ -155,6 +139,7 @@ static jboolean JNICALL isImGuiComponentTouched(JNIEnv*, jclass, jfloat x, jfloa
     if (!g_Initialized) return JNI_FALSE;
     auto hit = [&](float* b) { return x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]; };
     if (hit(g_MainWindowBounds)) return JNI_TRUE;
+    if (g_SecondaryWindowVisible && hit(g_SecondaryWindowBounds)) return JNI_TRUE;
     if (g_DragBarVisible && hit(g_DragBarBounds)) return JNI_TRUE;
     if (g_PopupVisible  && hit(g_PopupBounds))   return JNI_TRUE;
     return JNI_FALSE;
@@ -162,10 +147,11 @@ static jboolean JNICALL isImGuiComponentTouched(JNIEnv*, jclass, jfloat x, jfloa
 
 static jfloatArray JNICALL nativeGetImGuiWindowBounds(JNIEnv* env, jclass) {
     if (!g_Initialized) return env->NewFloatArray(0);
-    int count = 1 + (g_DragBarVisible?1:0) + (g_PopupVisible?1:0);
+    int count = 1 + (g_SecondaryWindowVisible?1:0) + (g_DragBarVisible?1:0) + (g_PopupVisible?1:0);
     jfloatArray result = env->NewFloatArray(count * 4);
     int off = 0;
     env->SetFloatArrayRegion(result, off, 4, g_MainWindowBounds); off += 4;
+    if (g_SecondaryWindowVisible) { env->SetFloatArrayRegion(result, off, 4, g_SecondaryWindowBounds); off += 4; }
     if (g_DragBarVisible) { env->SetFloatArrayRegion(result, off, 4, g_DragBarBounds); off += 4; }
     if (g_PopupVisible)   { env->SetFloatArrayRegion(result, off, 4, g_PopupBounds);   off += 4; }
     return result;
@@ -230,6 +216,9 @@ static void JNICALL nativeInit(JNIEnv* env, jclass, jobject surface) {
     ImGui::GetStyle().ScaleAllSizes(2.0f);
     auto& s = ImGui::GetStyle();
     s.WindowRounding = 5.3f; s.FrameRounding = 2.3f; s.ScrollbarRounding = 0;
+    s.TabRounding = 6.0f;
+    s.ItemSpacing.x = 12.0f;
+    s.WindowPadding = ImVec2(12.0f, 12.0f);
     ImGui::StyleColorsDark();
     io.FontGlobalScale = 1.0f;
 
@@ -254,6 +243,14 @@ static void JNICALL nativeInit(JNIEnv* env, jclass, jobject surface) {
         &TouchUI::ButtonManager::GetInstance());
     ImGuiKeyboard::InputManager::GetInstance().AddKeyListener(
         &TouchUI::ButtonManager::GetInstance());
+
+    // 设置初始窗口边界，确保第一帧触摸就能正确识别
+    float winW = 750.0f, winH = 550.0f;
+    float winX = 屏宽/2 - winW/2, winY = 100.0f;
+    g_MainWindowBounds[0] = winX;
+    g_MainWindowBounds[1] = winY;
+    g_MainWindowBounds[2] = winX + winW;
+    g_MainWindowBounds[3] = winY + winH;
 
     g_Initialized = true;
     LOGI("[VK] nativeInit complete (%dx%d)", screenWidth, screenHeight);

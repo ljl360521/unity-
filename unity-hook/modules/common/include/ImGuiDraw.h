@@ -34,6 +34,8 @@
 extern float 屏宽, 屏高;
 extern int 屏幕宽, 屏幕高;
 extern float g_MainWindowBounds[4];
+extern float g_SecondaryWindowBounds[4];
+extern bool  g_SecondaryWindowVisible;
 extern bool g_Initialized;
 JNIEnv* getJNIEnv();
 extern JavaVM *g_JavaVM;

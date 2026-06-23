@@ -1,0 +1,25 @@
+CMakeFiles/hook.dir/modules/xhook/src/xh_jni.c.o: \
+  /workspace/unity-hook/modules/xhook/src/xh_jni.c \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/jni.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/stdarg.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stdarg___gnuc_va_list.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stdarg_va_list.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stdarg_va_arg.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stdarg___va_copy.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stdarg_va_copy.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/stdint.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdint.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/wchar_limits.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/versioning.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/api-level.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/get_device_api_level_inlines.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/ndk-version.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/stddef.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_ptrdiff_t.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_size_t.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_wchar_t.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_null.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_max_align_t.h \
+  /opt/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_offsetof.h \
+  /workspace/unity-hook/modules/xhook/include/xhook.h
